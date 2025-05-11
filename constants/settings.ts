@@ -6,7 +6,7 @@ export const SiteSettings = {
     part2: "Together",
   },
   description:
-    "CancerCoin democratizes cancer research funding via $CANCER on Solana’s blockchain, empowering patients, researchers, and crypto users to innovate in immunotherapy and AI diagnostics.",
+    "CancerCoin democratizes cancer research funding via $CANCER on Solana's blockchain, empowering patients, researchers, and crypto users to innovate in immunotherapy and AI diagnostics.",
   generator: "v0.dev",
   contact: {
     address: {

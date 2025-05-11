@@ -133,7 +133,7 @@ export function CommitteeSection() {
                   variants={imageVariants}
                 >
                   {/* Frame wrapper with smooth border radius */}
-                  <Link href={SiteSettings.socials[1].url} target="_blank">
+                  <Link href="https://orcid.org/0000-0002-8749-5653" target="_blank">
                     <motion.div
                       className="relative overflow-hidden hover:scale-105 transition-transform duration-300 w-full"
                       style={{

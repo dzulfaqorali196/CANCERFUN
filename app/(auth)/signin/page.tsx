@@ -25,11 +25,15 @@ export default function SignIn() {
             <div className="relative z-20 mt-auto">
               <blockquote className="space-y-2">
                 <p className="text-lg">
-                  “CancerFun is a platform for cancer research and development,
+                  "CancerFun is a platform for cancer research and development,
                   engineered by researchers to accelerate Cancer Focused
-                  Decentralized Science”
+                  Decentralized Science"
                 </p>
-                <footer className="text-sm">Hsun Hung - Founder</footer>
+                <footer className="text-sm">
+                  <Link href="https://orcid.org/0000-0002-8749-5653" target="_blank" className="hover:text-purple-300 transition-colors">
+                    Hsun Hung - Founder
+                  </Link>
+                </footer>
               </blockquote>
             </div>
           </div>

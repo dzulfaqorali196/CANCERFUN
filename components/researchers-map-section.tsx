@@ -212,7 +212,7 @@ export function ResearchersMapSection() {
           </span>
         </h2>
         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto text-center px-4 sm:px-6 md:px-0">
-          CencerCoin collaborates with leading cancer research institutions worldwide to develop breakthrough technologies and therapies.
+          CancerFun collaborates with researchers from leading cancer research institutions worldwide to develop breakthrough technologies and therapies.
         </p>
       </div>
       
