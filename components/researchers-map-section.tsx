@@ -208,11 +208,11 @@ export function ResearchersMapSection() {
         <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-normal mb-4 sm:mb-6 text-center">
           <span className="text-white">Global </span>
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#A855F7] to-[#E9D5FF]">
-            Research Network
+            Cancer Research Network
           </span>
         </h2>
         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto text-center px-4 sm:px-6 md:px-0">
-          CancerFun collaborates with researchers from leading cancer research institutions worldwide to develop breakthrough technologies and therapies.
+          CancerFun connects with world-class research institutions around the globe to accelerate discoveries and develop revolutionary cancer therapies.
         </p>
       </div>
       

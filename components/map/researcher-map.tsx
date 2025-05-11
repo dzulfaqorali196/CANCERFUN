@@ -94,14 +94,14 @@ const ResearcherMap: React.FC<ResearcherMapProps> = ({ researcherLocations, rese
   const countryStyle = (feature: any) => {
     const countryCode = feature.properties.iso_a2;
     
-    // If country has researchers, give it a stronger purple color
+    // If country has researchers, give it a stronger purple border (not fill)
     if (RESEARCHER_COUNTRY_CODES.includes(countryCode)) {
       return {
-        fillColor: '#9c27b0', // Stronger purple color
-        weight: 2,
-        opacity: 0.9,
-        color: '#6a1b9a', // Darker purple border
-        fillOpacity: 0.7,  // Higher opacity to stand out
+        fillColor: '#454545', // Same as regular countries
+        weight: 3, // Thicker border
+        opacity: 1,
+        color: '#9c27b0', // Purple border
+        fillOpacity: 0.3, // Slightly more visible
         dashArray: ''
       };
     }
@@ -165,21 +165,21 @@ const ResearcherMap: React.FC<ResearcherMapProps> = ({ researcherLocations, rese
       mouseover: (e) => {
         const target = e.target;
         target.setStyle({
-          weight: 3,
-          color: isResearcherCountry ? '#6a1b9a' : '#666',
+          weight: 4,
+          color: isResearcherCountry ? '#9c27b0' : '#666',
           dashArray: '',
-          fillOpacity: isResearcherCountry ? 0.9 : 0.5
+          fillOpacity: isResearcherCountry ? 0.5 : 0.4
         });
         target.bringToFront();
       },
       mouseout: (e) => {
         const target = e.target;
         const defaultStyle = isResearcherCountry ? {
-          fillColor: '#9c27b0',
-          weight: 2,
-          opacity: 0.9,
-          color: '#6a1b9a',
-          fillOpacity: 0.7,
+          fillColor: '#454545',
+          weight: 3,
+          opacity: 1,
+          color: '#9c27b0',
+          fillOpacity: 0.3,
           dashArray: ''
         } : {
           fillColor: '#454545',

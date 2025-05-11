@@ -16,6 +16,7 @@ import { StatsSection } from "@/components/stats-section";
 import { VideoSection } from "@/components/video/video-section";
 import { SiteSettings } from "@/constants/settings";
 import { ResearchersMapSection } from "@/components/researchers-map-section";
+import DonateSection from "@/components/donate-section";
 
 const DynamicProjectSection = dynamic(
   () =>
@@ -93,6 +94,7 @@ export default async function Home() {
       {/* <TokenomicsSection /> */}
       <FaqSection />
       <CommitteeSection />
+      <DonateSection />
       <DynamicLatestBlogPostSection posts={posts} />
       {/* <CtaSection /> */}
     </>
