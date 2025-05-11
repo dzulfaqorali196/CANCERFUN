@@ -242,8 +242,6 @@ const ResearcherMap: React.FC<ResearcherMapProps> = ({ researcherLocations, rese
                 </a>
               </h3>
               <p className="text-sm mb-2">
-                <span className="font-semibold">{location.country}</span>
-                <br />
                 <span className="text-gray-600">📍 {location.city}</span>
               </p>
             </div>

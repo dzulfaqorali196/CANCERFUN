@@ -12,7 +12,7 @@ const researcherLocations = [
     coordinates: [42.3376, -71.1037] as [number, number],
     countryCode: "US",
     website: "https://www.dana-farber.org",
-    city: "Boston, Massachusetts"
+    city: "Boston, Massachusetts, USA"
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const researcherLocations = [
     coordinates: [29.7604, -95.3698] as [number, number],
     countryCode: "US",
     website: "https://www.mdanderson.org",
-    city: "Houston, Texas"
+    city: "Houston, Texas, USA"
   },
   {
     id: 3,
@@ -30,7 +30,7 @@ const researcherLocations = [
     coordinates: [39.0029, -77.1043] as [number, number],
     countryCode: "US",
     website: "https://www.cancer.gov",
-    city: "Bethesda, Maryland"
+    city: "Bethesda, Maryland, USA"
   },
   {
     id: 4,
@@ -39,7 +39,7 @@ const researcherLocations = [
     coordinates: [40.7645, -73.9565] as [number, number],
     countryCode: "US",
     website: "https://www.mskcc.org",
-    city: "New York City, New York"
+    city: "New York City, New York, USA"
   },
   {
     id: 5,
@@ -48,7 +48,7 @@ const researcherLocations = [
     coordinates: [51.5259, -0.1289] as [number, number],
     countryCode: "GB",
     website: "https://www.cancerresearchuk.org",
-    city: "London, England"
+    city: "London, England, United Kingdom"
   },
   {
     id: 6,
@@ -57,7 +57,7 @@ const researcherLocations = [
     coordinates: [49.4142, 8.6750] as [number, number],
     countryCode: "DE",
     website: "https://www.dkfz.de",
-    city: "Heidelberg"
+    city: "Heidelberg, Germany"
   },
   {
     id: 7,
@@ -66,7 +66,7 @@ const researcherLocations = [
     coordinates: [48.8453, 2.3434] as [number, number],
     countryCode: "FR",
     website: "https://institut-curie.org",
-    city: "Paris"
+    city: "Paris, France"
   },
   {
     id: 8,
@@ -75,7 +75,7 @@ const researcherLocations = [
     coordinates: [-37.8136, 144.9631] as [number, number],
     countryCode: "AU",
     website: "https://www.petermac.org",
-    city: "Melbourne, Victoria"
+    city: "Melbourne, Victoria, Australia"
   },
   {
     id: 9,
@@ -84,7 +84,7 @@ const researcherLocations = [
     coordinates: [35.2288, 139.1027] as [number, number],
     countryCode: "JP",
     website: "https://www.riken.jp/en/research/labs/ims",
-    city: "Yokohama, Kanagawa"
+    city: "Yokohama, Kanagawa, Japan"
   },
   {
     id: 10,
@@ -93,7 +93,7 @@ const researcherLocations = [
     coordinates: [1.2956, 103.7877] as [number, number],
     countryCode: "SG",
     website: "https://www.a-star.edu.sg/imcb",
-    city: "Singapore"
+    city: "Singapore, Singapore"
   }
 ];
 
