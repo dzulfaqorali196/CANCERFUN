@@ -30,7 +30,7 @@ export const SiteSettings = {
     {
       name: "LinkedIn",
       // url: "https://www.linkedin.com/in/hsun-hung-33098a351/",
-      url: "https://www.walterhung.com/",
+      url: "https://orcid.org/0000-0002-8749-5653",
       icon: "FaLinkedin",
     },
   ],
