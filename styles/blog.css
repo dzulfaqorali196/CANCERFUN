@@ -1,0 +1,202 @@
+.prose {
+  font-family: "Inter", sans-serif;
+  color: #e5e7eb;
+  line-height: 1.6;
+}
+
+.prose h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #f3f4f6;
+  font-weight: 600;
+}
+
+.prose h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #d1d5db;
+  font-weight: 500;
+}
+
+.prose p {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  color: #e5e7eb;
+}
+
+.prose a {
+  color: #3b82f6;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.prose a:hover {
+  color: #2563eb;
+}
+
+.prose strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.prose em {
+  color: #d1d5db;
+  font-style: italic;
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.prose figure {
+  margin: 1.5rem 0;
+}
+
+.prose figcaption {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.prose th,
+.prose td {
+  border: 1px solid #4b5563;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.prose th {
+  background-color: #1f2937;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.prose td {
+  background-color: #111827;
+  color: #e5e7eb;
+}
+
+.prose ul,
+.prose ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+  color: #e5e7eb;
+}
+
+.prose ol {
+  list-style-type: decimal;
+}
+
+.prose ul {
+  list-style-type: disc;
+}
+
+.prose blockquote {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border-left: 4px solid #3b82f6;
+  background-color: #1f2937;
+  color: #d1d5db;
+  font-style: italic;
+  border-radius: 0.5rem;
+}
+
+.prose blockquote p {
+  margin: 0;
+}
+
+.prose pre {
+  position: relative;
+  overflow-x: auto;
+  line-height: 1.5;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #111827;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.prose pre code {
+  display: block;
+  font-family: "Fira Code", monospace;
+  font-size: 0.875rem;
+  color: #e5e7eb;
+  background: none;
+  padding: 0;
+}
+
+.prose pre::before {
+  content: "Copy";
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: #374151;
+  color: #ffffff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.prose pre::before:hover {
+  background-color: #4b5563;
+}
+
+.prose code {
+  font-family: "Fira Code", monospace;
+  font-size: 0.875rem;
+  color: #ffffff;
+  background-color: #374151;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid #4b5563;
+  margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .prose h1 {
+    font-size: 2rem;
+  }
+
+  .prose h2 {
+    font-size: 1.75rem;
+  }
+
+  .prose h3 {
+    font-size: 1.5rem;
+  }
+
+  .prose p {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,525 @@
+"use client";
+
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
+import {
+  useCreateJobApplicationMutation,
+  GetJobDetailsDocument,
+} from "@/hasura/generated/graphql";
+import { useRouter } from "next/navigation";
+import { request } from "graphql-request";
+
+const HASURA_URL =
+  process.env.HASURA_GRAPHQL_ENDPOINT ||
+  "https://your-hasura-app.hasura.app/v1/graphql";
+const HASURA_ADMIN_SECRET = process.env.HASURA_SECRET;
+
+const GET_USER_BY_EMAIL = `
+  query GetUserByEmail($email: String!) {
+    users(where: { email: { _eq: $email } }) {
+      id
+      name
+      email
+    }
+  }
+`;
+
+const INSERT_USER = `
+  mutation InsertUser($id: uuid!, $name: String!, $email: String!) {
+    insert_users_one(object: { id: $id, name: $name, email: $email }) {
+      id
+      name
+      email
+    }
+  }
+`;
+
+interface Education {
+  degree: string;
+  institution: string;
+  year_completed: string;
+  field_of_study: string;
+}
+
+interface Experience {
+  job_title: string;
+  institution_name: string;
+  start_date: string;
+  end_date: string;
+  responsibilities: string;
+  achievements: string;
+}
+
+interface ApplyFormProps {
+  jobId: string;
+  jobTitle: string;
+}
+
+export function ApplyForm({ jobId, jobTitle }: ApplyFormProps) {
+  const { data: session } = useSession();
+  const user = session?.user;
+  const [formData, setFormData] = useState({
+    personal_info: {
+      name: user?.name || "",
+      email: user?.email || "",
+    },
+    educations: [] as Education[],
+    experiences: [] as Experience[],
+    cover_letter: "",
+  });
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [createApplication, { loading, error }] =
+    useCreateJobApplicationMutation();
+  const router = useRouter();
+
+  const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      personal_info: { ...prev.personal_info, [name]: value },
+    }));
+  };
+
+  const handleEducationChange = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => {
+      const educations = [...prev.educations];
+      educations[index] = { ...educations[index], [name]: value };
+      return { ...prev, educations };
+    });
+  };
+
+  const handleExperienceChange = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => {
+      const experiences = [...prev.experiences];
+      experiences[index] = { ...experiences[index], [name]: value };
+      return { ...prev, experiences };
+    });
+  };
+
+  const addEducation = () => {
+    setFormData((prev) => ({
+      ...prev,
+      educations: [
+        ...prev.educations,
+        {
+          degree: "",
+          institution: "",
+          year_completed: "",
+          field_of_study: "",
+        },
+      ],
+    }));
+  };
+
+  const removeEducation = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      educations: prev.educations.filter((_, i) => i !== index),
+    }));
+  };
+
+  const addExperience = () => {
+    setFormData((prev) => ({
+      ...prev,
+      experiences: [
+        ...prev.experiences,
+        {
+          job_title: "",
+          institution_name: "",
+          start_date: "",
+          end_date: "",
+          responsibilities: "",
+          achievements: "",
+        },
+      ],
+    }));
+  };
+
+  const removeExperience = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      experiences: prev.experiences.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setResumeFile(file);
+  };
+
+  const handleCoverLetterChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setFormData((prev) => ({ ...prev, cover_letter: e.target.value }));
+  };
+
+  const checkOrCreateUser = async () => {
+    if (!user?.id || !user.email) {
+      throw new Error("User not authenticated");
+    }
+
+    const headers: Record<string, string> = {};
+    if (HASURA_ADMIN_SECRET) {
+      headers["x-hasura-admin-secret"] = HASURA_ADMIN_SECRET;
+    }
+
+    const userResponse = await request<{
+      users: { id: string; name: string; email: string }[];
+    }>(HASURA_URL, GET_USER_BY_EMAIL, { email: user.email }, headers);
+
+    if (userResponse.users.length > 0) {
+      return userResponse.users[0];
+    }
+
+    const newUser = await request<{
+      insert_users_one: { id: string; name: string; email: string };
+    }>(
+      HASURA_URL,
+      INSERT_USER,
+      {
+        id: user.id,
+        name: user.name || user.email.split("@")[0],
+        email: user.email,
+      },
+      headers
+    );
+
+    return newUser.insert_users_one;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id) {
+      toast.error("Please log in to apply for this job.");
+      router.push("/auth/signin");
+      return;
+    }
+
+    try {
+      await checkOrCreateUser();
+
+      let resume_url: string | null = null;
+      if (resumeFile) {
+        const formData = new FormData();
+        formData.append("file", resumeFile);
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        if (!response.ok) throw new Error("Failed to upload resume");
+        const { url } = await response.json();
+        resume_url = url;
+      }
+
+      console.log("===x===", {
+        job_id: jobId,
+        user_id: user.id,
+        status: "Pending",
+        resume_url,
+        extra_info: {
+          personal_info: formData.personal_info,
+          educations: formData.educations,
+          experiences: formData.experiences,
+          cover_letter: formData.cover_letter || null,
+        },
+      });
+
+      await createApplication({
+        variables: {
+          input: {
+            job_id: jobId,
+            user_id: user.id,
+            status: "Pending",
+            resume_url,
+            extra_info: {
+              personal_info: formData.personal_info,
+              educations: formData.educations,
+              experiences: formData.experiences,
+              cover_letter: formData.cover_letter || null,
+            },
+          },
+        },
+        update: (cache, { data }) => {
+          const newApplication = data?.insert_job_applications_one;
+          if (!newApplication) return;
+
+          const jobData = cache.readQuery<{
+            jobs_by_pk: {
+              job_applications_aggregate: {
+                aggregate: {
+                  count: number;
+                };
+              };
+            };
+          }>({
+            query: GetJobDetailsDocument,
+            variables: { id: jobId },
+          });
+          if (jobData?.jobs_by_pk) {
+            cache.writeQuery({
+              query: GetJobDetailsDocument,
+              variables: { id: jobId },
+              data: {
+                jobs_by_pk: {
+                  ...jobData.jobs_by_pk,
+                  job_applications_aggregate: {
+                    ...jobData.jobs_by_pk.job_applications_aggregate,
+                    aggregate: {
+                      count:
+                        (jobData.jobs_by_pk.job_applications_aggregate.aggregate
+                          ?.count || 0) + 1,
+                    },
+                  },
+                },
+              },
+            });
+          }
+        },
+      });
+      toast.success("Application submitted successfully!", {
+        description: `Your application for ${jobTitle} has been received.`,
+      });
+      setFormData({
+        personal_info: { name: user?.name || "", email: user?.email || "" },
+        educations: [],
+        experiences: [],
+        cover_letter: "",
+      });
+      setResumeFile(null);
+      router.push(`/jobs/${jobId}`);
+    } catch (err) {
+      console.error("Error submitting application:", err);
+      toast.error("Failed to submit application", {
+        description: err instanceof Error ? err.message : "Please try again.",
+      });
+    }
+  };
+
+  return (
+    <div className="w-full max-w-2xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6">Apply for {jobTitle}</h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <Tabs defaultValue="personal" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="personal">Personal Info</TabsTrigger>
+            <TabsTrigger value="education">Education</TabsTrigger>
+            <TabsTrigger value="experience">Job Experience</TabsTrigger>
+          </TabsList>
+          <TabsContent value="personal" className="space-y-4">
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                name="name"
+                value={formData.personal_info.name}
+                onChange={handlePersonalInfoChange}
+                placeholder="Your name"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.personal_info.email}
+                onChange={handlePersonalInfoChange}
+                placeholder="your.email@example.com"
+                required
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="education" className="space-y-4">
+            {formData.educations.map((edu, index) => (
+              <div key={index} className="border p-4 rounded-md space-y-2">
+                <div>
+                  <Label htmlFor={`degree-${index}`}>Degree</Label>
+                  <Input
+                    id={`degree-${index}`}
+                    name="degree"
+                    value={edu.degree}
+                    onChange={(e) => handleEducationChange(index, e)}
+                    placeholder="e.g., Bachelor of Science"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`institution-${index}`}>Institution</Label>
+                  <Input
+                    id={`institution-${index}`}
+                    name="institution"
+                    value={edu.institution}
+                    onChange={(e) => handleEducationChange(index, e)}
+                    placeholder="e.g., University of Example"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`year_completed-${index}`}>
+                    Year Completed
+                  </Label>
+                  <Input
+                    id={`year_completed-${index}`}
+                    name="year_completed"
+                    type="number"
+                    value={edu.year_completed}
+                    onChange={(e) => handleEducationChange(index, e)}
+                    placeholder="e.g., 2020"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`field_of_study-${index}`}>
+                    Field of Study
+                  </Label>
+                  <Input
+                    id={`field_of_study-${index}`}
+                    name="field_of_study"
+                    value={edu.field_of_study}
+                    onChange={(e) => handleEducationChange(index, e)}
+                    placeholder="e.g., Computer Science"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => removeEducation(index)}
+                >
+                  Remove
+                </Button>
+              </div>
+            ))}
+            <Button type="button" onClick={addEducation}>
+              Add Education
+            </Button>
+          </TabsContent>
+          <TabsContent value="experience" className="space-y-4">
+            {formData.experiences.map((exp, index) => (
+              <div key={index} className="border p-4 rounded-md space-y-2">
+                <div>
+                  <Label htmlFor={`job_title-${index}`}>Job Title</Label>
+                  <Input
+                    id={`job_title-${index}`}
+                    name="job_title"
+                    value={exp.job_title}
+                    onChange={(e) => handleExperienceChange(index, e)}
+                    placeholder="e.g., Software Engineer"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`institution_name-${index}`}>Company</Label>
+                  <Input
+                    id={`institution_name-${index}`}
+                    name="institution_name"
+                    value={exp.institution_name}
+                    onChange={(e) => handleExperienceChange(index, e)}
+                    placeholder="e.g., Tech Corp"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`start_date-${index}`}>Start Date</Label>
+                  <Input
+                    id={`start_date-${index}`}
+                    name="start_date"
+                    type="date"
+                    value={exp.start_date}
+                    onChange={(e) => handleExperienceChange(index, e)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`end_date-${index}`}>End Date</Label>
+                  <Input
+                    id={`end_date-${index}`}
+                    name="end_date"
+                    type="date"
+                    value={exp.end_date}
+                    onChange={(e) => handleExperienceChange(index, e)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`responsibilities-${index}`}>
+                    Responsibilities
+                  </Label>
+                  <Textarea
+                    id={`responsibilities-${index}`}
+                    name="responsibilities"
+                    value={exp.responsibilities}
+                    onChange={(e) => handleExperienceChange(index, e)}
+                    placeholder="Describe your responsibilities"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`achievements-${index}`}>Achievements</Label>
+                  <Textarea
+                    id={`achievements-${index}`}
+                    name="achievements"
+                    value={exp.achievements}
+                    onChange={(e) => handleExperienceChange(index, e)}
+                    placeholder="List your achievements"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => removeExperience(index)}
+                >
+                  Remove
+                </Button>
+              </div>
+            ))}
+            <Button type="button" onClick={addExperience}>
+              Add Experience
+            </Button>
+          </TabsContent>
+        </Tabs>
+        <div className="space-y-2">
+          <Label htmlFor="resume">Resume</Label>
+          <Input
+            id="resume"
+            name="resume"
+            type="file"
+            accept=".pdf,.doc,.docx"
+            onChange={handleFileChange}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="cover_letter">Cover Letter</Label>
+          <Textarea
+            id="cover_letter"
+            name="cover_letter"
+            value={formData.cover_letter}
+            onChange={handleCoverLetterChange}
+            placeholder="Enter your cover letter"
+            rows={5}
+          />
+        </div>
+        {error && (
+          <p className="text-sm text-red-500">
+            Error:{" "}
+            {error.message ||
+              "An error occurred while submitting the application."}
+          </p>
+        )}
+        <Button
+          type="submit"
+          disabled={loading || !user?.id}
+          className="w-full"
+        >
+          {loading ? "Submitting..." : "Submit Application"}
+        </Button>
+      </form>
+    </div>
+  );
+}

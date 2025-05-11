@@ -1,0 +1,85 @@
+fragment JobParts on jobs {
+  id
+  title
+  description
+  location
+  salary
+  created_at
+  updated_at
+}
+
+query GetJobDetails($id: uuid!) {
+  jobs_by_pk(id: $id) {
+    ...JobParts
+    job_applications_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+query GetUserJobApplication($job_id: uuid!, $user_id: uuid!) {
+  job_applications(
+    where: { job_id: { _eq: $job_id }, user_id: { _eq: $user_id } }
+  ) {
+    id
+    job_id
+    user_id
+    applied_at
+    status
+    extra_info
+    resume_url
+    job {
+      title
+    }
+  }
+}
+
+mutation UpdateJobApplication($id: uuid!, $input: job_applications_set_input!) {
+  update_job_applications_by_pk(pk_columns: { id: $id }, _set: $input) {
+    id
+    job_id
+    user_id
+    applied_at
+    status
+    extra_info
+    resume_url
+  }
+}
+
+query GetJobs($limit: Int = 10, $offset: Int = 0) {
+  jobs(limit: $limit, offset: $offset, order_by: { created_at: desc }) {
+    ...JobParts
+  }
+}
+
+mutation CreateJob($input: jobs_insert_input!) {
+  insert_jobs_one(object: $input) {
+    ...JobParts
+  }
+}
+
+mutation UpdateJob($id: uuid!, $input: jobs_set_input!) {
+  update_jobs_by_pk(pk_columns: { id: $id }, _set: $input) {
+    ...JobParts
+  }
+}
+
+mutation DeleteJob($id: uuid!) {
+  delete_jobs_by_pk(id: $id) {
+    id
+  }
+}
+
+mutation CreateJobApplication($input: job_applications_insert_input!) {
+  insert_job_applications_one(object: $input) {
+    id
+    job_id
+    user_id
+    applied_at
+    status
+    extra_info
+    resume_url
+  }
+}

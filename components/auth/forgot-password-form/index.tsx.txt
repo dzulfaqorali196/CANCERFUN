@@ -1,0 +1,296 @@
+"use client";
+
+import { useState } from "react";
+import { useForm, UseFormReturn } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useForgotPasswordStep } from "@/hooks/use-forgot-password-step";
+import Cookies from "js-cookie";
+
+// Define validation schemas for each step
+import { emailSchema, otpSchema, newPasswordSchema } from "./yup-schemas";
+
+// Define form data interfaces for each step
+import { EmailFormData, OtpFormData, NewPasswordFormData } from "./types";
+import HeaderForm from "@/components/auth/header";
+
+export default function ForgotPasswordForm() {
+  const router = useRouter();
+  const { step, updateStep, resetStep } = useForgotPasswordStep();
+  const [error, setError] = useState<string | null>(null);
+
+  // Initialize form based on the step with specific types
+  const emailForm = useForm<EmailFormData>({
+    resolver: yupResolver(emailSchema),
+    defaultValues: { email: "" },
+  });
+
+  const otpForm = useForm<OtpFormData>({
+    resolver: yupResolver(otpSchema),
+    defaultValues: { otp: "" },
+  });
+
+  const newPasswordForm = useForm<NewPasswordFormData>({
+    resolver: yupResolver(newPasswordSchema),
+    defaultValues: { newPassword: "", confirmPassword: "" },
+  });
+
+  const onSubmit = async (
+    data: EmailFormData | OtpFormData | NewPasswordFormData
+  ) => {
+    setError(null);
+
+    try {
+      if (step === 1) {
+        const emailData = data as EmailFormData;
+        const response = await fetch("/api/auth/forgot-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailData.email }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "An error occurred");
+        }
+
+        Cookies.set("forgotPasswordEmail", emailData.email);
+        updateStep(2);
+      } else if (step === 2) {
+        const otpData = data as OtpFormData;
+        const response = await fetch("/api/auth/validate-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: Cookies.get("forgotPasswordEmail"),
+            otp: otpData.otp,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Invalid OTP");
+        }
+
+        updateStep(3);
+      } else if (step === 3) {
+        const passwordData = data as NewPasswordFormData;
+        const response = await fetch("/api/auth/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: Cookies.get("forgotPasswordEmail"),
+            newPassword: passwordData.newPassword,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Failed to update password");
+        }
+
+        Cookies.remove("forgotPasswordEmail");
+        resetStep();
+        router.push(Routes.SIGNIN);
+      }
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred. Please try again.";
+      setError(errorMessage);
+    }
+  };
+
+  return (
+    <div className="lg:p-8">
+      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+        <HeaderForm
+          title="Forgot Password"
+          description={
+            step === 1
+              ? "Enter your email to receive an OTP."
+              : step === 2
+              ? "Enter the OTP sent to your email."
+              : "Set a new password."
+          }
+        />
+
+        {step === 1 && (
+          <Form {...emailForm}>
+            <form
+              onSubmit={emailForm.handleSubmit(onSubmit)}
+              className="grid gap-4"
+            >
+              <FormField
+                control={emailForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="name@example.com"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {error && <p className="text-sm text-destructive">{error}</p>}
+              <Button type="submit">Continue</Button>
+            </form>
+          </Form>
+        )}
+
+        {step === 2 && (
+          <Form {...otpForm}>
+            <form
+              onSubmit={otpForm.handleSubmit(onSubmit)}
+              className="grid gap-4"
+            >
+              <FormField
+                control={otpForm.control}
+                name="otp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>OTP</FormLabel>
+                    <FormControl>
+                      <Input type="text" placeholder="Enter OTP" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {error && <p className="text-sm text-destructive">{error}</p>}
+              <Button type="submit">Continue</Button>
+            </form>
+          </Form>
+        )}
+
+        {step === 3 && (
+          <Form {...newPasswordForm}>
+            <form
+              onSubmit={newPasswordForm.handleSubmit(onSubmit)}
+              className="grid gap-4"
+            >
+              <FormField
+                control={newPasswordForm.control}
+                name="newPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={newPasswordForm.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {error && <p className="text-sm text-destructive">{error}</p>}
+              <Button type="submit">Continue</Button>
+            </form>
+          </Form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/*
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+export default function ForgotPasswordForm() {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "An error occurred");
+      }
+
+      setSuccess("OTP sent successfully. Please check your email.");
+    } catch (err: any) {
+      setError(err.message || "An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="lg:p-8">
+      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+        <h1 className="text-2xl font-bold">Forgot Password</h1>
+        <p className="text-sm text-muted-foreground">
+          Enter your email to receive a one-time password (OTP).
+        </p>
+        <div className="grid gap-4">
+          <Input
+            type="email"
+            placeholder="name@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
+          />
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          {success && <p className="text-sm text-green-600">{success}</p>}
+          <Button onClick={handleSubmit} disabled={isLoading}>
+            {isLoading ? "Sending..." : "Send OTP"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+*/

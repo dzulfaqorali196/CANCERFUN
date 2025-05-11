@@ -1,0 +1,124 @@
+"use client";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { TabsContent } from "@/components/ui/tabs";
+import { ApplyFormData } from "@/components/job/apply/types";
+
+type SetFormData = (
+  value: ApplyFormData | ((prevState: ApplyFormData) => ApplyFormData)
+) => void;
+
+interface Props {
+  formData: ApplyFormData;
+  setFormData: SetFormData;
+  applicationLoading: boolean;
+}
+
+export default function TabEducation({
+  formData,
+  setFormData,
+  applicationLoading,
+}: Props) {
+  const handleEducationChange = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => {
+      const educations = [...prev.educations];
+      educations[index] = { ...educations[index], [name]: value };
+      return { ...prev, educations };
+    });
+  };
+  const addEducation = () => {
+    setFormData((prev) => ({
+      ...prev,
+      educations: [
+        ...prev.educations,
+        {
+          degree: "",
+          institution: "",
+          year_completed: "",
+          field_of_study: "",
+        },
+      ],
+    }));
+  };
+  const removeEducation = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      educations: prev.educations.filter((_, i) => i !== index),
+    }));
+  };
+
+  return (
+    <TabsContent value="education" className="space-y-4">
+      {formData.educations.map((edu, index) => (
+        <div key={index} className="border p-4 rounded-md space-y-2">
+          <div>
+            <Label htmlFor={`degree-${index}`}>Degree</Label>
+            <Input
+              id={`degree-${index}`}
+              name="degree"
+              value={edu.degree}
+              onChange={(e) => handleEducationChange(index, e)}
+              placeholder="e.g., Bachelor of Science"
+              disabled={applicationLoading}
+            />
+          </div>
+          <div>
+            <Label htmlFor={`institution-${index}`}>Institution</Label>
+            <Input
+              id={`institution-${index}`}
+              name="institution"
+              value={edu.institution}
+              onChange={(e) => handleEducationChange(index, e)}
+              placeholder="e.g., University of Example"
+              disabled={applicationLoading}
+            />
+          </div>
+          <div>
+            <Label htmlFor={`year_completed-${index}`}>Year Completed</Label>
+            <Input
+              id={`year_completed-${index}`}
+              name="year_completed"
+              type="number"
+              value={edu.year_completed}
+              onChange={(e) => handleEducationChange(index, e)}
+              placeholder="e.g., 2020"
+              disabled={applicationLoading}
+            />
+          </div>
+          <div>
+            <Label htmlFor={`field_of_study-${index}`}>Field of Study</Label>
+            <Input
+              id={`field_of_study-${index}`}
+              name="field_of_study"
+              value={edu.field_of_study}
+              onChange={(e) => handleEducationChange(index, e)}
+              placeholder="e.g., Computer Science"
+              disabled={applicationLoading}
+            />
+          </div>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={() => removeEducation(index)}
+            disabled={applicationLoading}
+          >
+            Remove
+          </Button>
+        </div>
+      ))}
+      <Button
+        type="button"
+        onClick={addEducation}
+        disabled={applicationLoading}
+      >
+        Add Education
+      </Button>
+    </TabsContent>
+  );
+}
