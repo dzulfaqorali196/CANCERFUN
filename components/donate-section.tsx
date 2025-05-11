@@ -142,7 +142,7 @@ export default function DonatePage() {
         
         {/* Character */}
         <motion.div
-          className="absolute top-6 left-6 w-20 h-20 z-20"
+          className="absolute top-6 left-6 w-20 h-20 z-20 hidden"
           variants={characterVariants}
         >
           <Image
@@ -204,40 +204,39 @@ export default function DonatePage() {
           </div>
         </div>
         
-        {/* Donate Button - Full Width */}
+        {/* Donate Button */}
         <motion.div 
           className="relative z-20 px-6 py-6"
           variants={buttonVariants}
         >
           <motion.div
-            whileHover={{ 
-              scale: 1.03, 
-              boxShadow: "0 0 25px rgba(168, 85, 247, 0.6)",
-              transition: { duration: 0.2 }
-            }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
+            className="shadow-lg"
           >
             <Link
               href="https://donate.cancer.org/"
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 px-6 py-4 text-center text-xl font-bold text-white w-full flex items-center justify-center relative overflow-hidden group"
+              className="block rounded-xl bg-purple-600 px-6 py-4 text-center text-xl font-bold text-white w-full flex items-center justify-center"
             >
-              <span className="relative z-10">Donate Now</span>
-              <span className="absolute inset-0 bg-gradient-to-r from-purple-700 to-fuchsia-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              <span className="absolute -inset-x-1 bottom-0 h-1 bg-white opacity-20 group-hover:opacity-40 transition-all duration-300"></span>
+              <span className="flex items-center justify-center w-full">Donate Now</span>
             </Link>
           </motion.div>
         </motion.div>
         
         {/* Mission Text */}
         <motion.div 
-          className="relative z-20 px-6 py-2 text-center"
+          className="relative z-20 px-8 py-2 text-center w-full max-w-[400px] mx-auto"
           variants={itemVariants}
         >
-          <p className="text-xs text-white/80">
-            *Our mission aligns with <span className="font-bold text-white">cancer.org</span>. 
-            Donations made there directly support our shared fight against cancer
+          <p className="text-xs text-white/80 px-2 leading-relaxed">
+            *Our mission aligns with{" "}
+            <Link href="https://cancer.org" target="_blank" rel="noopener noreferrer" className="font-bold text-white underline">
+              cancer.org
+            </Link>
+            <br />
+            Donations made there directly support our shared fight against cancer.
           </p>
         </motion.div>
         
@@ -301,7 +300,7 @@ export default function DonatePage() {
       <div className="relative z-10 flex min-h-screen w-full">
         {/* Purple Character */}
         <motion.div 
-          className="absolute left-[5%] top-[10%] w-40 h-40"
+          className="absolute left-[5%] top-[10%] w-40 h-40 hidden"
           variants={characterVariants}
         >
           <Image
@@ -315,46 +314,48 @@ export default function DonatePage() {
 
         {/* Donate Button */}
         <motion.div 
-          className="absolute right-[10%] top-[15%] w-[350px]"
+          className="absolute right-[15%] top-[15%] w-[350px]"
           variants={buttonVariants}
         >
           <motion.div
-            whileHover={{ 
-              scale: 1.05, 
-              boxShadow: "0 0 25px rgba(168, 85, 247, 0.6)",
-              transition: { duration: 0.2 }
-            }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
+            className="shadow-lg"
           >
             <Link
               href="https://donate.cancer.org/"
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-3xl bg-purple-600 px-12 py-10 h-40 text-4xl font-bold text-white w-full flex items-center justify-center relative overflow-hidden group"
+              className="block rounded-3xl bg-purple-600 px-12 py-10 h-40 text-5xl font-bold text-white w-full flex items-center justify-center"
             >
-              <span className="relative z-10">Donate</span>
-              <span className="absolute inset-0 bg-gradient-to-r from-purple-700 to-fuchsia-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              <span className="absolute -inset-x-1 bottom-0 h-1 bg-gradient-to-r from-pink-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:h-2"></span>
-              <span className="absolute right-0 -top-10 w-20 h-20 bg-white/20 rotate-45 transform translate-x-2 -translate-y-2 opacity-0 group-hover:opacity-100 group-hover:-translate-y-1 transition-all duration-700"></span>
+              <span className="flex items-center justify-center w-full">Donate</span>
             </Link>
           </motion.div>
         </motion.div>
 
         {/* Mission Text */}
         <motion.div 
-          className="absolute right-[10%] top-[40%] w-[350px] text-white"
+          className="absolute w-[600px] text-white text-justify"
+          style={{ right: "calc(5% - 125px)", top: "40%" }}
           variants={itemVariants}
         >
-          <p className="text-sm">
+          <p className="text-lg leading-relaxed">
             <span className="font-semibold">*Our mission aligns with </span>
-            <span className="font-bold">cancer.org</span>
+            <Link href="https://cancer.org" target="_blank" rel="noopener noreferrer" className="font-bold hover:underline underline">
+              cancer.org
+            </Link>
+            <br />
             <span className="font-semibold">
-              . Donations made there directly support our shared fight against cancer
+              Donations made there directly support
+            </span>
+            <br />
+            <span className="font-semibold">
+              our shared fight against cancer.
             </span>
           </p>
         </motion.div>
 
-        {/* Statistics Text - Mengikuti persis format pada gambar */}
+        {/* Statistics Text */}
         <motion.div 
           className="absolute bottom-[15%] left-[48%] max-w-3xl"
           variants={statisticsVariants}
