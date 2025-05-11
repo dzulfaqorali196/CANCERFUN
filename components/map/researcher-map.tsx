@@ -12,6 +12,8 @@ interface ResearcherLocation {
   country: string;
   coordinates: [number, number]; // [latitude, longitude]
   countryCode: string;
+  website: string;
+  city: string;
 }
 
 interface ResearcherMapProps {
@@ -143,7 +145,15 @@ const ResearcherMap: React.FC<ResearcherMapProps> = ({ researcherLocations, rese
       if (researchersInCountry.length > 0) {
         popupContent += '<ul style="margin: 5px 0 0 15px; padding: 0;">';
         researchersInCountry.forEach(researcher => {
-          popupContent += `<li style="color: #9c27b0;">${researcher.name}</li>`;
+          popupContent += `
+            <li style="color: #9c27b0; margin-bottom: 8px;">
+              <a href="${researcher.website}" target="_blank" rel="noopener noreferrer" 
+                style="color: #9c27b0; font-weight: bold; text-decoration: none; display: inline-block;">
+                ${researcher.name} <span style="font-size: 10px;">&#128279;</span>
+              </a><br>
+              <span style="color: #666; font-size: 12px;">&#128205; ${researcher.city}</span>
+            </li>
+          `;
         });
         popupContent += '</ul>';
       }
@@ -220,9 +230,22 @@ const ResearcherMap: React.FC<ResearcherMapProps> = ({ researcherLocations, rese
           icon={purpleIcon}
         >
           <Popup>
-            <div>
-              <h3 className="font-medium">{location.name}</h3>
-              <p>{location.country}</p>
+            <div className="researcher-popup">
+              <h3 className="text-lg font-medium mb-1">
+                <a 
+                  href={location.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-purple-600 hover:text-purple-800 hover:underline"
+                >
+                  {location.name} <span className="text-xs">🔗</span>
+                </a>
+              </h3>
+              <p className="text-sm mb-2">
+                <span className="font-semibold">{location.country}</span>
+                <br />
+                <span className="text-gray-600">📍 {location.city}</span>
+              </p>
             </div>
           </Popup>
         </Marker>
