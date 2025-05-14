@@ -197,7 +197,7 @@ export function CommitteeSection() {
               {/* <Link href="/jobs/623e95f0-e574-4f06-a120-ec46449f4976"> */}
               <Link href="/committee/application/page1">
                 <Button className="h-[50px] md:h-[67px] w-full md:w-[372px] rounded-[50px] border-[1.4px] border-solid border-[#b49fee] [background:linear-gradient(319deg,rgba(217,213,222,1)_0%,rgba(210,174,245,0)_51%,rgba(239,219,255,1)_100%),linear-gradient(0deg,rgba(168,88,255,1)_0%,rgba(168,88,255,1)_100%)] font-['Neue_Montreal'] font-bold text-white text-base md:text-xl">
-                  Apply to be CancerFun Comitte
+                  Apply to be CancerFun Committee
                 </Button>
               </Link>
             </motion.div>

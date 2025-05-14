@@ -177,15 +177,13 @@ export default function HeroSection() {
   };
 
   useEffect(() => {
-    // Aktifkan animasi jika progress section terlihat
-    if (isProgressInView) {
-      const timer = setTimeout(() => {
-        setProgressAnimation(true);
-      }, 500);
+    // Memulai animasi progress setelah 5 menit halaman diakses
+    const timer = setTimeout(() => {
+      setProgressAnimation(true);
+    }, 5 * 60 * 1000); // 5 menit dalam milidetik
 
-      return () => clearTimeout(timer);
-    }
-  }, [isProgressInView]);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Animasi persentase dan nilai committed/limit
@@ -739,7 +737,7 @@ export default function HeroSection() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                   >
-                    Creation Commited
+                    Creation Committed
                   </motion.h3>
                   <motion.p
                     className="text-2xl md:text-3xl font-bold text-[#a857ff]"
